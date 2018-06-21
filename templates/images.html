@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block pageTitle %}
+        Galería de Fotos
+{% endblock %}
+
+{% block navbar %}
+    <section class="menu cid-qRtgcGa7fN" once="menu" id="menu1-i">
+
+
+
+    <nav class="navbar navbar-expand beta-menu navbar-dropdown align-items-center navbar-fixed-top navbar-toggleable-sm" style="position: relative">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+        <div class="menu-logo">
+            <div class="navbar-brand">
+                <span class="navbar-logo">
+                    <a href="{% url "home" %}">
+                         <img src="{% static "img/rPiMedia_logo.png" %}" alt="PiVoz" title="PiVoz" style="height: 3.8rem;">
+                    </a>
+                </span>
+                <span class="navbar-caption-wrap"><a class="navbar-caption text-white display-4" href="{% url "home" %}">
+                        PiVoz</a></span>
+            </div>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav nav-dropdown nav-right" data-app-modern-menu="true">
+
+
+                <li style="visibility: {% if usuario.is_authenticated %} hidden {% endif %}" class="nav-item">
+                    <a class="nav-link link text-white display-4" href="{% url 'login' %}"><span class="mbri-login mbr-iconfont mbr-iconfont-btn"></span>
+
+                        Iniciar Sesión </a>
+                </li>
+                <li style="visibility: {% if not usuario.is_staff %} hidden {% endif %}" class="nav-item"><a class="nav-link link text-white display-4" href="{% url "admin:index" %}"><span class="mbri-setting mbr-iconfont mbr-iconfont-btn"></span>
+
+                        Administrar</a></li>
+
+                {% if usuario.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link link text-white dropdown-toggle display-4" href="https://mobirise.com" data-toggle="dropdown-submenu" aria-expanded="false"><span class="mbrib-user mbr-iconfont mbr-iconfont-btn"></span>
+
+                       {{ usuario.username }}</a>
+                    <div class="dropdown-menu">
+                    <a class="text-white dropdown-item display-4" href="{% url "admin:Galeria_usuario_changelist" %}">Ver Perfil</a>
+                    <a class="text-white dropdown-item display-4" href="{% url "logout" %}">Cerrar Sesión</a></div>
+                </li>
+                {% endif %}
+
+        </div>
+    </nav>
+</section>
+{% endblock %}
+
+{% block subnav %}
+
+{#    <section class="mbr-section content8 cid-qUGXuiGWBH" id="content8-15">#}
+{##}
+{#    <div class="container">#}
+{#        <div class="media-container-row title">#}
+{#            <div class="col-12 col-md-8">#}
+{#                <a><span class="label label-info"> Cambiar vista</span> </a>#}
+{#                <div class="mbr-section-btn align-center"><a class="btn btn-primary display-4" href="https://mobirise.com">Álbums</a>#}
+{#                    <a class="btn btn-black display-4" href="https://mobirise.com">Todas las fotos</a></div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#</section>#}
+
+
+    <div class="container-fluid" align="center">
+        <input id="inputToggle" type="checkbox" checked data-toggle="toggle" data-size=="large" data-on="Vista Álbum" data-off="Vista Fotos"  data-onstyle="success" data-offstyle="danger">
+        <p>El estado actual es:<p id="status"> </p> </p>
+    </div>
+
+
+
+{% endblock %}
+
+{% block content %}
+
+
+<div id="imgThumbs" class="row">
+    {% for image in imagenes %}
+        <div  class="column">
+            <img src="{{ image.thumbnail.url }}" style="width:100%" onclick="openModal();currentSlide({{ forloop.counter }})" class="hover-shadow cursor">
+        </div>
+    {% endfor %}
+
+</div>
+
+<div id="myModal" class="modal" style="position: relative">
+  <span class="close cursor" onclick="closeModal()">&times;</span>
+  <div class="modal-content">
+
+      {% for image in imagenes %}
+          <div class="mySlides">
+              <div class="numbertext">{{ forloop.counter }} / {{ forloop.revcounter }}</div>
+              <img src="{{ image.fichero_imagen.url }}" style="width:100%">
+          </div>
+      {% endfor %}
+
+
+    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+    <a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+    <div class="caption-container">
+      <p id="caption"></p>
+    </div>
+
+  <div class="row">
+      {% for image in imagenes %}
+          <div class="column">
+              <img class="demo cursor" src="{{ image.fichero_imagen.url }}" style="width:100%" onclick="currentSlide({{ forloop.counter }})" alt="{{ image.titulo }}">
+          </div>
+      {% endfor %}
+  </div>
+
+
+
+</div>
+
+  </div>
+</div>
+    <script>
+        function openModal() {
+            document.getElementById('myModal').style.display = "block";
+            document.getElementById("imgThumbs").style.display = 'none';
+        }
+
+        function closeModal() {
+            document.getElementById('myModal').style.display = "none";
+            document.getElementById("imgThumbs").style.display = 'block';
+        }
+
+        var slideIndex = 1;
+        showSlides(slideIndex);
+
+        function plusSlides(n) {
+            showSlides(slideIndex += n);
+        }
+
+        function currentSlide(n) {
+            showSlides(slideIndex = n);
+        }
+
+        function showSlides(n) {
+            var i;
+            var slides = document.getElementsByClassName("mySlides");
+            var dots = document.getElementsByClassName("demo");
+            var captionText = document.getElementById("caption");
+            if (n > slides.length) {slideIndex = 1}
+            if (n < 1) {slideIndex = slides.length}
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+            for (i = 0; i < dots.length; i++) {
+                dots[i].className = dots[i].className.replace(" active", "");
+            }
+            slides[slideIndex-1].style.display = "block";
+            dots[slideIndex-1].className += " active";
+            captionText.innerHTML = dots[slideIndex-1].alt;
+        }
+
+    </script>
+
+
+{% endblock %}
